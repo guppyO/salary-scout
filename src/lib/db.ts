@@ -99,3 +99,67 @@ export interface SalaryPageData extends SalaryData {
     metro_slug: string;
     state_abbr: string | null;
 }
+
+export interface DataMetadata {
+    id: number;
+    data_period: string;
+    bls_release_date: string | null;
+    last_ingested_at: string;
+    last_checked_at: string;
+    record_count: number | null;
+    source_url: string | null;
+}
+
+/**
+ * Get current data metadata (period, last update, etc.)
+ */
+export async function getDataMetadata(): Promise<DataMetadata | null> {
+    try {
+        return await queryOne<DataMetadata>(
+            'SELECT * FROM data_metadata WHERE id = 1'
+        );
+    } catch {
+        // Table might not exist yet - return default
+        return {
+            id: 1,
+            data_period: 'May 2024',
+            bls_release_date: '2025-04-02',
+            last_ingested_at: new Date().toISOString(),
+            last_checked_at: new Date().toISOString(),
+            record_count: 141164,
+            source_url: null,
+        };
+    }
+}
+
+/**
+ * Update the last_checked_at timestamp
+ */
+export async function updateLastChecked(): Promise<void> {
+    await query(
+        'UPDATE data_metadata SET last_checked_at = NOW() WHERE id = 1'
+    );
+}
+
+/**
+ * Update data metadata after successful ingestion
+ */
+export async function updateDataMetadata(
+    dataPeriod: string,
+    blsReleaseDate: string | null,
+    recordCount: number,
+    sourceUrl: string
+): Promise<void> {
+    await query(
+        `INSERT INTO data_metadata (id, data_period, bls_release_date, record_count, source_url, last_ingested_at, last_checked_at)
+         VALUES (1, $1, $2, $3, $4, NOW(), NOW())
+         ON CONFLICT (id) DO UPDATE SET
+            data_period = $1,
+            bls_release_date = $2,
+            record_count = $3,
+            source_url = $4,
+            last_ingested_at = NOW(),
+            last_checked_at = NOW()`,
+        [dataPeriod, blsReleaseDate, recordCount, sourceUrl]
+    );
+}

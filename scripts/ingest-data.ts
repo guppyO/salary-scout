@@ -7,6 +7,11 @@
  * Options:
  *   --dry-run    Only process first 100 rows (for testing)
  *   --full       Process all data (default)
+ *
+ * Environment variables:
+ *   DATA_FILE    Path to Excel file (default: data/oesm24ma/MSA_M2024_dl.xlsx)
+ *   DATA_PERIOD  Data period string (default: "May 2024")
+ *   DATABASE_URL Supabase connection string
  */
 
 import { Pool } from 'pg';
@@ -25,6 +30,10 @@ const pool = new Pool({
 // Command line args
 const isDryRun = process.argv.includes('--dry-run');
 const DRY_RUN_LIMIT = 100;
+
+// Data source configuration (can be overridden by env vars)
+const DATA_FILE = process.env.DATA_FILE || 'data/oesm24ma/MSA_M2024_dl.xlsx';
+const DATA_PERIOD = process.env.DATA_PERIOD || 'May 2024';
 
 // Slug generation
 function generateSlug(title: string): string {
@@ -125,8 +134,9 @@ async function ingestData() {
 
     try {
         // Read Excel file
-        const filePath = resolve(__dirname, '../data/oesm24ma/MSA_M2024_dl.xlsx');
+        const filePath = resolve(__dirname, '..', DATA_FILE);
         console.log(`📂 Reading file: ${filePath}`);
+        console.log(`📅 Data period: ${DATA_PERIOD}`);
 
         const workbook = XLSX.readFile(filePath);
         const sheetName = workbook.SheetNames[0];
@@ -315,6 +325,24 @@ async function ingestData() {
         console.log(`   Metro areas: ${statsResult.rows[0].metros}`);
         console.log(`   Salary records: ${statsResult.rows[0].salary_records}`);
         console.log(`   Indexable pages: ${statsResult.rows[0].indexable_pages}`);
+
+        // Update data_metadata table
+        console.log('\n📝 Updating data metadata...');
+        try {
+            await client.query(`
+                INSERT INTO data_metadata (id, data_period, record_count, last_ingested_at, last_checked_at)
+                VALUES (1, $1, $2, NOW(), NOW())
+                ON CONFLICT (id) DO UPDATE SET
+                    data_period = $1,
+                    record_count = $2,
+                    last_ingested_at = NOW(),
+                    last_checked_at = NOW()
+            `, [DATA_PERIOD, statsResult.rows[0].salary_records]);
+            console.log(`✅ Updated metadata: ${DATA_PERIOD}`);
+        } catch (metaError) {
+            // data_metadata table might not exist yet - that's OK
+            console.log('⚠️  Could not update data_metadata table (may not exist yet)');
+        }
 
         console.log('\n✅ Data ingestion complete!');
 

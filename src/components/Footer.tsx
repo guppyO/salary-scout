@@ -4,6 +4,10 @@
 
 import Link from 'next/link';
 
+// Data period - update when ingesting new BLS data
+// This could also come from process.env.NEXT_PUBLIC_DATA_PERIOD
+const DATA_PERIOD = 'May 2024';
+
 export function Footer() {
     const currentYear = new Date().getFullYear();
 
@@ -39,12 +43,18 @@ export function Footer() {
                             Powered by official BLS data.
                         </p>
                         {/* Social/Trust badges */}
-                        <div className="mt-6 flex items-center gap-3">
+                        <div className="mt-6 flex flex-wrap items-center gap-2">
                             <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-medium rounded-full">
                                 <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
                                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                                 </svg>
                                 Official BLS Data
+                            </span>
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 text-xs font-medium rounded-full">
+                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                                Data: {DATA_PERIOD}
                             </span>
                         </div>
                     </div>
