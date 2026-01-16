@@ -1,0 +1,60 @@
+{
+  "projectSlug": "salaryscout",
+  "tempName": false,
+  "domain": "salaryscout.com",
+  "niche": "Salary Data by Occupation and Location",
+  "currentPhase": 11,
+  "phaseStatus": {
+    "phase0": "completed",
+    "phase1": "completed",
+    "phase2": "completed",
+    "phase3": "completed",
+    "phase4": "completed",
+    "phase5": "completed",
+    "phase6": "completed",
+    "phase7": "completed",
+    "phase8": "completed",
+    "phase9": "completed",
+    "phase10": "completed",
+    "phase11": "pending",
+    "phase12": "pending",
+    "phase13": "pending"
+  },
+  "supabase": {
+    "projectId": "yagvfecgsmkaimplkkvv",
+    "poolerRegion": "aws-1-eu-west-3",
+    "connected": true,
+    "postgresVersion": "17.6"
+  },
+  "nextjs": {
+    "version": "16.1.2",
+    "buildStatus": "pass"
+  },
+  "mcpStatus": {
+    "websearch": "ready",
+    "exa": "verified",
+    "fetch": "verified",
+    "playwright": "verified",
+    "lighthouse": "deferred",
+    "postgres": "verified",
+    "memory": "verified",
+    "context7": "verified",
+    "magicui": "verified",
+    "nanobanana": "verified"
+  },
+  "research": {
+    "queriesRun": 35,
+    "categoriesExplored": 12,
+    "candidatesEvaluated": 12,
+    "selectedNiche": "BLS OEWS Salary Data",
+    "trafficValidated": true,
+    "cpcValidated": true,
+    "revenueProjection": "$1,200/month",
+    "dataSource": "https://www.bls.gov/oes/tables.htm",
+    "cpcTier": 2,
+    "pagesPotential": "400K+",
+    "viabilityScore": 8.5
+  },
+  "createdAt": "2026-01-16",
+  "updatedAt": "2026-01-16"
+}
