@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { Header, Footer, HeroSearch, StatCard, Icons, WebsiteJsonLd } from '@/components';
 import { query } from '@/lib/db';
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://salaryscout.com';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://revenue-explorer-new.vercel.app';
 
 // Revalidate every day
 export const revalidate = 86400;

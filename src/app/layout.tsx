@@ -9,7 +9,7 @@ const inter = Inter({
   variable: "--font-inter",
 });
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://salaryscout.com";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://revenue-explorer-new.vercel.app";
 const SITE_NAME = "SalaryScout";
 
 export const metadata: Metadata = {

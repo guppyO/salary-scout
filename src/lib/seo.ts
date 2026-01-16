@@ -6,7 +6,7 @@
 
 import { Metadata } from 'next';
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://salaryscout.com';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://revenue-explorer-new.vercel.app';
 const SITE_NAME = 'SalaryScout';
 
 /**

@@ -61,7 +61,10 @@ export function Header() {
                         <ThemeToggle />
 
                         {/* Mobile menu button */}
-                        <button className="md:hidden p-2 text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
+                        <button
+                            className="md:hidden p-2 text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                            aria-label="Open navigation menu"
+                        >
                             <svg
                                 className="h-6 w-6"
                                 fill="none"
