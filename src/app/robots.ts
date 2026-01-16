@@ -34,6 +34,6 @@ export default function robots(): MetadataRoute.Robots {
                 disallow: ['/'],
             },
         ],
-        sitemap: `${SITE_URL}/sitemap.xml`,
+        sitemap: 'https://revenue-explorer-new.vercel.app/sitemap.xml',
     };
 }
