@@ -311,13 +311,34 @@ export function HeroSearch({ className = '' }: HeroSearchProps) {
     const [activeField, setActiveField] = useState<'job' | 'location' | null>(null);
     const [selectedIndex, setSelectedIndex] = useState(-1);
     const [isLoading, setIsLoading] = useState(false);
+    const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0, width: 0 });
     const router = useRouter();
     const jobInputRef = useRef<HTMLInputElement>(null);
     const locationInputRef = useRef<HTMLInputElement>(null);
-    const dropdownRef = useRef<HTMLDivElement>(null);
+    const jobDropdownRef = useRef<HTMLDivElement>(null);
+    const locationDropdownRef = useRef<HTMLDivElement>(null);
 
     const debouncedJobQuery = useDebounce(jobQuery, 200);
     const debouncedLocationQuery = useDebounce(locationQuery, 200);
+
+    // Update dropdown position when active field changes
+    useEffect(() => {
+        if (activeField === 'job' && jobInputRef.current) {
+            const rect = jobInputRef.current.getBoundingClientRect();
+            setDropdownPosition({
+                top: rect.bottom + 8,
+                left: rect.left,
+                width: rect.width,
+            });
+        } else if (activeField === 'location' && locationInputRef.current) {
+            const rect = locationInputRef.current.getBoundingClientRect();
+            setDropdownPosition({
+                top: rect.bottom + 8,
+                left: rect.left,
+                width: rect.width,
+            });
+        }
+    }, [activeField, jobResults, locationResults]);
 
     // Fetch job results
     useEffect(() => {
@@ -392,14 +413,13 @@ export function HeroSearch({ className = '' }: HeroSearchProps) {
     // Close dropdown when clicking outside
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
-            if (
-                dropdownRef.current &&
-                !dropdownRef.current.contains(event.target as Node) &&
-                jobInputRef.current &&
-                !jobInputRef.current.contains(event.target as Node) &&
-                locationInputRef.current &&
-                !locationInputRef.current.contains(event.target as Node)
-            ) {
+            const target = event.target as Node;
+            const isClickInsideJobDropdown = jobDropdownRef.current?.contains(target);
+            const isClickInsideLocationDropdown = locationDropdownRef.current?.contains(target);
+            const isClickInsideJobInput = jobInputRef.current?.contains(target);
+            const isClickInsideLocationInput = locationInputRef.current?.contains(target);
+
+            if (!isClickInsideJobDropdown && !isClickInsideLocationDropdown && !isClickInsideJobInput && !isClickInsideLocationInput) {
                 setActiveField(null);
             }
         }
@@ -407,8 +427,6 @@ export function HeroSearch({ className = '' }: HeroSearchProps) {
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
-
-    const currentResults = activeField === 'job' ? jobResults : locationResults;
 
     const handleKeyDown = useCallback(
         (e: React.KeyboardEvent, field: 'job' | 'location') => {
@@ -469,6 +487,7 @@ export function HeroSearch({ className = '' }: HeroSearchProps) {
     };
 
     return (
+        <>
         <form
             onSubmit={handleSubmit}
             className={`bg-white/10 backdrop-blur-xl rounded-2xl p-2 border border-white/20 shadow-2xl ${className}`}
@@ -506,44 +525,6 @@ export function HeroSearch({ className = '' }: HeroSearchProps) {
                     {isLoading && activeField === 'job' && (
                         <div className="absolute right-4 top-1/2 -translate-y-1/2">
                             <div className="h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-                        </div>
-                    )}
-
-                    {/* Job Autocomplete Dropdown */}
-                    {activeField === 'job' && jobResults.length > 0 && (
-                        <div
-                            ref={dropdownRef}
-                            className="absolute z-[9999] w-full mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl overflow-hidden"
-                        >
-                            {jobResults.map((result, index) => (
-                                <button
-                                    key={result.url}
-                                    type="button"
-                                    className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-colors ${
-                                        index === selectedIndex
-                                            ? 'bg-blue-100 dark:bg-blue-800/50'
-                                            : 'hover:bg-gray-100 dark:hover:bg-gray-700'
-                                    }`}
-                                    onClick={() => selectResult(result, 'job')}
-                                    onMouseEnter={() => setSelectedIndex(index)}
-                                >
-                                    <div className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400">
-                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                                        </svg>
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                        <div className="font-medium text-gray-900 dark:text-white truncate">
-                                            {result.title}
-                                        </div>
-                                        {result.subtitle && (
-                                            <div className="text-sm text-gray-500 dark:text-gray-400">
-                                                {result.subtitle}
-                                            </div>
-                                        )}
-                                    </div>
-                                </button>
-                            ))}
                         </div>
                     )}
                 </div>
@@ -588,45 +569,6 @@ export function HeroSearch({ className = '' }: HeroSearchProps) {
                             <div className="h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
                         </div>
                     )}
-
-                    {/* Location Autocomplete Dropdown */}
-                    {activeField === 'location' && locationResults.length > 0 && (
-                        <div
-                            ref={dropdownRef}
-                            className="absolute z-[9999] w-full mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl overflow-hidden"
-                        >
-                            {locationResults.map((result, index) => (
-                                <button
-                                    key={result.url}
-                                    type="button"
-                                    className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-colors ${
-                                        index === selectedIndex
-                                            ? 'bg-blue-100 dark:bg-blue-800/50'
-                                            : 'hover:bg-gray-100 dark:hover:bg-gray-700'
-                                    }`}
-                                    onClick={() => selectResult(result, 'location')}
-                                    onMouseEnter={() => setSelectedIndex(index)}
-                                >
-                                    <div className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400">
-                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                        </svg>
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                        <div className="font-medium text-gray-900 dark:text-white truncate">
-                                            {result.title}
-                                        </div>
-                                        {result.subtitle && (
-                                            <div className="text-sm text-gray-500 dark:text-gray-400">
-                                                {result.subtitle}
-                                            </div>
-                                        )}
-                                    </div>
-                                </button>
-                            ))}
-                        </div>
-                    )}
                 </div>
 
                 <Button
@@ -638,5 +580,93 @@ export function HeroSearch({ className = '' }: HeroSearchProps) {
                 </Button>
             </div>
         </form>
+
+        {/* Job Autocomplete Dropdown - Fixed Position Portal */}
+        {activeField === 'job' && jobResults.length > 0 && (
+            <div
+                ref={jobDropdownRef}
+                className="fixed z-[9999] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl overflow-hidden"
+                style={{
+                    top: dropdownPosition.top,
+                    left: dropdownPosition.left,
+                    width: dropdownPosition.width,
+                }}
+            >
+                {jobResults.map((result, index) => (
+                    <button
+                        key={result.url}
+                        type="button"
+                        className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-colors ${
+                            index === selectedIndex
+                                ? 'bg-blue-100 dark:bg-blue-800/50'
+                                : 'hover:bg-gray-100 dark:hover:bg-gray-700'
+                        }`}
+                        onClick={() => selectResult(result, 'job')}
+                        onMouseEnter={() => setSelectedIndex(index)}
+                    >
+                        <div className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                            </svg>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                            <div className="font-medium text-gray-900 dark:text-white truncate">
+                                {result.title}
+                            </div>
+                            {result.subtitle && (
+                                <div className="text-sm text-gray-500 dark:text-gray-400">
+                                    {result.subtitle}
+                                </div>
+                            )}
+                        </div>
+                    </button>
+                ))}
+            </div>
+        )}
+
+        {/* Location Autocomplete Dropdown - Fixed Position Portal */}
+        {activeField === 'location' && locationResults.length > 0 && (
+            <div
+                ref={locationDropdownRef}
+                className="fixed z-[9999] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl overflow-hidden"
+                style={{
+                    top: dropdownPosition.top,
+                    left: dropdownPosition.left,
+                    width: dropdownPosition.width,
+                }}
+            >
+                {locationResults.map((result, index) => (
+                    <button
+                        key={result.url}
+                        type="button"
+                        className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-colors ${
+                            index === selectedIndex
+                                ? 'bg-blue-100 dark:bg-blue-800/50'
+                                : 'hover:bg-gray-100 dark:hover:bg-gray-700'
+                        }`}
+                        onClick={() => selectResult(result, 'location')}
+                        onMouseEnter={() => setSelectedIndex(index)}
+                    >
+                        <div className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                            <div className="font-medium text-gray-900 dark:text-white truncate">
+                                {result.title}
+                            </div>
+                            {result.subtitle && (
+                                <div className="text-sm text-gray-500 dark:text-gray-400">
+                                    {result.subtitle}
+                                </div>
+                            )}
+                        </div>
+                    </button>
+                ))}
+            </div>
+        )}
+    </>
     );
 }
