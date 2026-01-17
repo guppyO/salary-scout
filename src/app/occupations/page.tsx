@@ -67,7 +67,7 @@ export default async function OccupationsPage() {
 
             <main className="flex-1">
                 {/* Hero Section */}
-                <section className="relative bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 text-white py-16 px-4 overflow-hidden">
+                <section className="relative bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 dark:from-blue-900 dark:via-blue-950 dark:to-indigo-950 text-white py-16 px-4 overflow-hidden">
                     {/* Background decoration */}
                     <div className="absolute inset-0 overflow-hidden">
                         <div className="absolute -top-24 -right-24 w-96 h-96 bg-white/5 rounded-full blur-3xl" />
@@ -165,7 +165,7 @@ export default async function OccupationsPage() {
                                                 </div>
                                                 <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
                                                     {occ.avg_median && (
-                                                        <span className="font-semibold text-green-600 dark:text-green-400">
+                                                        <span className="font-semibold text-blue-600 dark:text-blue-400">
                                                             ${parseInt(String(occ.avg_median)).toLocaleString()}
                                                         </span>
                                                     )}

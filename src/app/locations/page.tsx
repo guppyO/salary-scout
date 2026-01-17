@@ -85,16 +85,16 @@ export default async function LocationsPage() {
 
             <main className="flex-1">
                 {/* Hero Section */}
-                <section className="relative bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-700 text-white py-16 px-4 overflow-hidden">
+                <section className="relative bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 dark:from-blue-900 dark:via-blue-950 dark:to-indigo-950 text-white py-16 px-4 overflow-hidden">
                     {/* Background decoration */}
                     <div className="absolute inset-0 overflow-hidden">
                         <div className="absolute -top-24 -right-24 w-96 h-96 bg-white/5 rounded-full blur-3xl" />
-                        <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-teal-400/20 rounded-full blur-3xl" />
+                        <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-indigo-400/20 rounded-full blur-3xl" />
                     </div>
 
                     <div className="container mx-auto max-w-6xl relative">
                         {/* Breadcrumb */}
-                        <nav className="text-sm text-emerald-200 mb-6">
+                        <nav className="text-sm text-blue-200 mb-6">
                             <Link href="/" className="hover:text-white underline">Home</Link>
                             <span className="mx-2">/</span>
                             <span className="text-white">Locations</span>
@@ -103,7 +103,7 @@ export default async function LocationsPage() {
                         <h1 className="text-4xl md:text-5xl font-bold mb-4">
                             Browse Salaries by Location
                         </h1>
-                        <p className="text-xl text-emerald-100 mb-8 max-w-2xl">
+                        <p className="text-xl text-blue-100 mb-8 max-w-2xl">
                             Explore salary data across {totalMetros.toLocaleString()} metro areas in the United States
                         </p>
 
@@ -111,15 +111,15 @@ export default async function LocationsPage() {
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
                             <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
                                 <div className="text-3xl font-bold">{totalMetros.toLocaleString()}</div>
-                                <div className="text-emerald-200 text-sm">Metro Areas</div>
+                                <div className="text-blue-200 text-sm">Metro Areas</div>
                             </div>
                             <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
                                 <div className="text-3xl font-bold">{totalStates}</div>
-                                <div className="text-emerald-200 text-sm">States & Territories</div>
+                                <div className="text-blue-200 text-sm">States & Territories</div>
                             </div>
                             <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
                                 <div className="text-xl font-bold truncate">{topPayingMetro?.area_title}</div>
-                                <div className="text-emerald-200 text-sm">Highest Top Salary: ${topPayingMetro?.top_salary?.toLocaleString()}</div>
+                                <div className="text-blue-200 text-sm">Highest Top Salary: ${topPayingMetro?.top_salary?.toLocaleString()}</div>
                             </div>
                         </div>
 
@@ -138,7 +138,7 @@ export default async function LocationsPage() {
                                 <a
                                     key={state}
                                     href={`#${state}`}
-                                    className="px-3 py-1.5 text-sm font-semibold rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-emerald-500 hover:text-white text-gray-700 dark:text-gray-300 transition-colors"
+                                    className="px-3 py-1.5 text-sm font-semibold rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-blue-600 hover:text-white text-gray-700 dark:text-gray-300 transition-colors"
                                 >
                                     {state}
                                 </a>
@@ -153,7 +153,7 @@ export default async function LocationsPage() {
                         {states.map((state) => (
                             <div key={state} id={state} className="mb-12 scroll-mt-32">
                                 <div className="flex items-center gap-4 mb-6">
-                                    <div className="w-12 h-12 flex items-center justify-center bg-emerald-600 text-white text-lg font-bold rounded-xl shadow-lg shadow-emerald-600/20">
+                                    <div className="w-12 h-12 flex items-center justify-center bg-blue-600 text-white text-lg font-bold rounded-xl shadow-lg shadow-blue-600/20">
                                         {state}
                                     </div>
                                     <div>
@@ -170,16 +170,16 @@ export default async function LocationsPage() {
                                         <Link
                                             key={metro.id}
                                             href={`/locations/${metro.slug}`}
-                                            className="group flex items-center gap-3 p-4 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 hover:border-emerald-300 dark:hover:border-emerald-700 hover:shadow-lg hover:shadow-emerald-500/5 transition-all"
+                                            className="group flex items-center gap-3 p-4 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-lg hover:shadow-blue-500/5 transition-all"
                                         >
-                                            <div className="flex-shrink-0 w-10 h-10 flex items-center justify-center bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-lg group-hover:bg-emerald-100 dark:group-hover:bg-emerald-900/50 transition-colors">
+                                            <div className="flex-shrink-0 w-10 h-10 flex items-center justify-center bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg group-hover:bg-blue-100 dark:group-hover:bg-blue-900/50 transition-colors">
                                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                                 </svg>
                                             </div>
                                             <div className="flex-1 min-w-0">
-                                                <div className="font-medium text-gray-900 dark:text-white truncate group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+                                                <div className="font-medium text-gray-900 dark:text-white truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                                                     {metro.area_title}
                                                 </div>
                                                 <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
@@ -194,7 +194,7 @@ export default async function LocationsPage() {
                                                     )}
                                                 </div>
                                             </div>
-                                            <svg className="w-5 h-5 text-gray-400 group-hover:text-emerald-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <svg className="w-5 h-5 text-gray-400 group-hover:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                                             </svg>
                                         </Link>

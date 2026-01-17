@@ -112,7 +112,7 @@ export default async function OccupationPage({ params }: PageProps) {
 
             <main className="flex-1">
                 {/* Header */}
-                <section className="bg-gradient-to-b from-blue-600 to-blue-700 text-white py-12 px-4">
+                <section className="bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 dark:from-blue-900 dark:via-blue-950 dark:to-indigo-950 text-white py-12 px-4">
                     <div className="container mx-auto max-w-6xl">
                         {/* Breadcrumbs */}
                         <nav className="text-sm text-blue-100 mb-4" aria-label="Breadcrumb">
