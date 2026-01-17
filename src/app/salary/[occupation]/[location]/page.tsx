@@ -9,6 +9,7 @@ import {
     BreadcrumbJsonLd,
     SalaryJsonLd,
     FAQJsonLd,
+    AdUnit,
 } from '@/components';
 import { query, queryOne, SalaryPageData } from '@/lib/db';
 import {
@@ -208,6 +209,9 @@ export default async function SalaryPage({ params }: PageProps) {
                                     employment={data.tot_emp}
                                 />
 
+                                {/* Ad Unit - Below Salary Card */}
+                                <AdUnit slot="1234567890" className="my-6" />
+
                                 {/* FAQ Section */}
                                 {faqs.length > 0 && (
                                     <div className="mt-8 bg-white dark:bg-gray-800 rounded-lg border p-6">
@@ -228,6 +232,9 @@ export default async function SalaryPage({ params }: PageProps) {
                                         </div>
                                     </div>
                                 )}
+
+                                {/* Ad Unit - Below FAQ */}
+                                <AdUnit slot="0987654321" className="mt-6" />
                             </div>
 
                             {/* Sidebar */}

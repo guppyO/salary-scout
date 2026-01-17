@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 
@@ -75,9 +76,7 @@ export const metadata: Metadata = {
     },
   },
   verification: {
-    // Add verification tokens when ready
-    // google: 'verification-token',
-    // yandex: 'verification-token',
+    google: 'gXvtVXttmV1pe2LM2y_cbAU8bBKFs7EkNt52orhFuk8',
   },
 };
 
@@ -114,6 +113,12 @@ export default function RootLayout({
         <ThemeProvider>
           {children}
         </ThemeProvider>
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1226435955298586"
+          crossOrigin="anonymous"
+          strategy="lazyOnload"
+        />
       </body>
     </html>
   );
