@@ -145,7 +145,7 @@ export default async function OccupationsPage() {
                                                 </svg>
                                             </div>
                                             <div className="flex-1 min-w-0">
-                                                <div className="font-medium text-gray-900 dark:text-white truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                                                <div className="font-medium text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-tight">
                                                     {occ.occ_title}
                                                 </div>
                                                 <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
