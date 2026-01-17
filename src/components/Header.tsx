@@ -33,30 +33,32 @@ export function Header() {
                         </span>
                     </Link>
 
-                    {/* Navigation */}
-                    <nav className="flex items-center gap-1">
-                        <Link
-                            href="/occupations"
-                            className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all"
-                        >
-                            Occupations
-                        </Link>
-                        <Link
-                            href="/locations"
-                            className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all"
-                        >
-                            Locations
-                        </Link>
-                        <Link
-                            href="/search"
-                            className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all"
-                        >
-                            Search
-                        </Link>
-                    </nav>
-
-                    {/* Theme Toggle */}
-                    <ThemeToggle />
+                    {/* Navigation + Theme Toggle */}
+                    <div className="flex items-center gap-1">
+                        <nav className="flex items-center gap-1">
+                            <Link
+                                href="/occupations"
+                                className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all"
+                            >
+                                Occupations
+                            </Link>
+                            <Link
+                                href="/locations"
+                                className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all"
+                            >
+                                Locations
+                            </Link>
+                            <Link
+                                href="/search"
+                                className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all"
+                            >
+                                Search
+                            </Link>
+                        </nav>
+                        <div className="ml-2">
+                            <ThemeToggle />
+                        </div>
+                    </div>
                 </div>
             </div>
         </header>

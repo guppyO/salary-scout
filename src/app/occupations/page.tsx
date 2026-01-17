@@ -92,7 +92,7 @@ export default async function OccupationsPage() {
 
                         {/* Search */}
                         <div className="max-w-2xl">
-                            <SearchBar placeholder="Search for an occupation..." size="lg" />
+                            <SearchBar placeholder="Search for an occupation..." size="lg" filterType="occupations" />
                         </div>
                     </div>
                 </section>
@@ -105,7 +105,7 @@ export default async function OccupationsPage() {
                                 <a
                                     key={letter}
                                     href={`#${letter}`}
-                                    className="w-9 h-9 flex items-center justify-center text-sm font-semibold rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-blue-500 hover:text-white text-gray-700 dark:text-gray-300 transition-colors"
+                                    className="w-9 h-9 flex items-center justify-center text-sm font-semibold rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-blue-500 dark:hover:bg-blue-600 hover:text-white text-gray-700 dark:text-gray-300 transition-colors"
                                 >
                                     {letter}
                                 </a>

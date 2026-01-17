@@ -22,6 +22,7 @@ interface SearchBarProps {
     placeholder?: string;
     className?: string;
     size?: 'default' | 'lg';
+    filterType?: 'all' | 'occupations' | 'locations';
 }
 
 // Debounce hook for API calls
@@ -45,17 +46,32 @@ export function SearchBar({
     placeholder = 'Search jobs or locations...',
     className = '',
     size = 'default',
+    filterType = 'all',
 }: SearchBarProps) {
     const [query, setQuery] = useState('');
     const [results, setResults] = useState<SearchResult[]>([]);
     const [isOpen, setIsOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [selectedIndex, setSelectedIndex] = useState(-1);
+    const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0, width: 0 });
     const router = useRouter();
     const inputRef = useRef<HTMLInputElement>(null);
     const dropdownRef = useRef<HTMLDivElement>(null);
+    const formRef = useRef<HTMLFormElement>(null);
 
     const debouncedQuery = useDebounce(query, 200);
+
+    // Update dropdown position when input is focused or results change
+    useEffect(() => {
+        if (isOpen && inputRef.current) {
+            const rect = inputRef.current.getBoundingClientRect();
+            setDropdownPosition({
+                top: rect.bottom + window.scrollY + 8,
+                left: rect.left + window.scrollX,
+                width: rect.width,
+            });
+        }
+    }, [isOpen, results]);
 
     // Fetch results when query changes
     useEffect(() => {
@@ -73,25 +89,29 @@ export function SearchBar({
                     const data = await response.json();
                     const formattedResults: SearchResult[] = [];
 
-                    // Add occupations
-                    data.occupations?.slice(0, 5).forEach((occ: { occ_title: string; slug: string; avg_salary?: number }) => {
-                        formattedResults.push({
-                            type: 'occupation',
-                            title: occ.occ_title,
-                            subtitle: occ.avg_salary ? `Avg: $${Math.round(occ.avg_salary).toLocaleString()}` : undefined,
-                            url: `/occupations/${occ.slug}`,
+                    // Add occupations (unless filtering for locations only)
+                    if (filterType !== 'locations') {
+                        data.occupations?.slice(0, filterType === 'occupations' ? 8 : 5).forEach((occ: { occ_title: string; slug: string; avg_salary?: number }) => {
+                            formattedResults.push({
+                                type: 'occupation',
+                                title: occ.occ_title,
+                                subtitle: occ.avg_salary ? `Avg: $${Math.round(occ.avg_salary).toLocaleString()}` : undefined,
+                                url: `/occupations/${occ.slug}`,
+                            });
                         });
-                    });
+                    }
 
-                    // Add locations
-                    data.locations?.slice(0, 5).forEach((loc: { area_title: string; slug: string; state_abbr?: string }) => {
-                        formattedResults.push({
-                            type: 'location',
-                            title: loc.area_title,
-                            subtitle: loc.state_abbr || undefined,
-                            url: `/locations/${loc.slug}`,
+                    // Add locations (unless filtering for occupations only)
+                    if (filterType !== 'occupations') {
+                        data.locations?.slice(0, filterType === 'locations' ? 8 : 5).forEach((loc: { area_title: string; slug: string; state_abbr?: string }) => {
+                            formattedResults.push({
+                                type: 'location',
+                                title: loc.area_title,
+                                subtitle: loc.state_abbr || undefined,
+                                url: `/locations/${loc.slug}`,
+                            });
                         });
-                    });
+                    }
 
                     setResults(formattedResults);
                     setIsOpen(formattedResults.length > 0);
@@ -105,7 +125,7 @@ export function SearchBar({
         }
 
         fetchResults();
-    }, [debouncedQuery]);
+    }, [debouncedQuery, filterType]);
 
     // Close dropdown when clicking outside
     useEffect(() => {
@@ -172,49 +192,56 @@ export function SearchBar({
     const buttonClasses = size === 'lg' ? 'h-14 px-8 text-lg' : '';
 
     return (
-        <form onSubmit={handleSubmit} className={`relative ${className}`}>
-            <div className="flex gap-2">
-                <div className="relative flex-1">
-                    <svg
-                        className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                    >
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+        <>
+            <form onSubmit={handleSubmit} className={`relative ${className}`} ref={formRef}>
+                <div className="flex gap-2">
+                    <div className="relative flex-1">
+                        <svg
+                            className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                            />
+                        </svg>
+                        <input
+                            ref={inputRef}
+                            type="search"
+                            value={query}
+                            onChange={(e) => setQuery(e.target.value)}
+                            onFocus={() => results.length > 0 && setIsOpen(true)}
+                            onKeyDown={handleKeyDown}
+                            placeholder={placeholder}
+                            className={`w-full pl-10 pr-4 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none ${inputClasses}`}
+                            autoComplete="off"
                         />
-                    </svg>
-                    <input
-                        ref={inputRef}
-                        type="search"
-                        value={query}
-                        onChange={(e) => setQuery(e.target.value)}
-                        onFocus={() => results.length > 0 && setIsOpen(true)}
-                        onKeyDown={handleKeyDown}
-                        placeholder={placeholder}
-                        className={`w-full pl-10 pr-4 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none ${inputClasses}`}
-                        autoComplete="off"
-                    />
-                    {isLoading && (
-                        <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                            <div className="h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-                        </div>
-                    )}
+                        {isLoading && (
+                            <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                                <div className="h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                            </div>
+                        )}
+                    </div>
+                    <Button type="submit" className={buttonClasses}>
+                        Search
+                    </Button>
                 </div>
-                <Button type="submit" className={buttonClasses}>
-                    Search
-                </Button>
-            </div>
+            </form>
 
-            {/* Autocomplete Dropdown */}
+            {/* Autocomplete Dropdown - Fixed Position Portal */}
             {isOpen && results.length > 0 && (
                 <div
                     ref={dropdownRef}
-                    className="absolute z-[100] w-full mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl overflow-hidden"
+                    className="fixed z-[9999] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl overflow-hidden"
+                    style={{
+                        top: dropdownPosition.top,
+                        left: dropdownPosition.left,
+                        width: dropdownPosition.width,
+                    }}
                 >
                     {results.map((result, index) => (
                         <button
@@ -222,8 +249,8 @@ export function SearchBar({
                             type="button"
                             className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-colors ${
                                 index === selectedIndex
-                                    ? 'bg-blue-50 dark:bg-blue-900/30'
-                                    : 'hover:bg-gray-50 dark:hover:bg-gray-700/50'
+                                    ? 'bg-blue-100 dark:bg-blue-800/50'
+                                    : 'hover:bg-gray-100 dark:hover:bg-gray-700'
                             }`}
                             onClick={() => {
                                 router.push(result.url);
@@ -268,7 +295,7 @@ export function SearchBar({
                     ))}
                 </div>
             )}
-        </form>
+        </>
     );
 }
 
@@ -486,7 +513,7 @@ export function HeroSearch({ className = '' }: HeroSearchProps) {
                     {activeField === 'job' && jobResults.length > 0 && (
                         <div
                             ref={dropdownRef}
-                            className="absolute z-[100] w-full mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl overflow-hidden"
+                            className="absolute z-[9999] w-full mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl overflow-hidden"
                         >
                             {jobResults.map((result, index) => (
                                 <button
@@ -494,8 +521,8 @@ export function HeroSearch({ className = '' }: HeroSearchProps) {
                                     type="button"
                                     className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-colors ${
                                         index === selectedIndex
-                                            ? 'bg-blue-50 dark:bg-blue-900/30'
-                                            : 'hover:bg-gray-50 dark:hover:bg-gray-700/50'
+                                            ? 'bg-blue-100 dark:bg-blue-800/50'
+                                            : 'hover:bg-gray-100 dark:hover:bg-gray-700'
                                     }`}
                                     onClick={() => selectResult(result, 'job')}
                                     onMouseEnter={() => setSelectedIndex(index)}
@@ -566,7 +593,7 @@ export function HeroSearch({ className = '' }: HeroSearchProps) {
                     {activeField === 'location' && locationResults.length > 0 && (
                         <div
                             ref={dropdownRef}
-                            className="absolute z-[100] w-full mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl overflow-hidden"
+                            className="absolute z-[9999] w-full mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl overflow-hidden"
                         >
                             {locationResults.map((result, index) => (
                                 <button
@@ -574,8 +601,8 @@ export function HeroSearch({ className = '' }: HeroSearchProps) {
                                     type="button"
                                     className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-colors ${
                                         index === selectedIndex
-                                            ? 'bg-blue-50 dark:bg-blue-900/30'
-                                            : 'hover:bg-gray-50 dark:hover:bg-gray-700/50'
+                                            ? 'bg-blue-100 dark:bg-blue-800/50'
+                                            : 'hover:bg-gray-100 dark:hover:bg-gray-700'
                                     }`}
                                     onClick={() => selectResult(result, 'location')}
                                     onMouseEnter={() => setSelectedIndex(index)}
