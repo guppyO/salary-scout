@@ -172,11 +172,11 @@ export function SalaryCard({
                         </div>
                     )}
                     {employment && (
-                        <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
-                            <p className="text-xs text-blue-600 dark:text-blue-400 font-medium uppercase tracking-wider">
+                        <div className="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl">
+                            <p className="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wider">
                                 Total Employment
                             </p>
-                            <p className="text-lg font-bold text-blue-700 dark:text-blue-300 mt-1">
+                            <p className="text-lg font-bold text-gray-900 dark:text-white mt-1">
                                 {formatNumber(employment)}
                             </p>
                         </div>
