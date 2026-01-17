@@ -98,7 +98,7 @@ export function SalaryCard({
                             <span className="text-sm font-semibold text-gray-900 dark:text-white">
                                 Salary Range
                             </span>
-                            <span className="text-xs text-gray-500 dark:text-gray-400">
+                            <span className="text-xs text-gray-600 dark:text-gray-400">
                                 10th - 90th percentile
                             </span>
                         </div>
@@ -128,7 +128,7 @@ export function SalaryCard({
                                 <span className="font-semibold text-blue-600 dark:text-blue-400">
                                     {formatSalary(median)}
                                 </span>
-                                <span className="text-gray-400 dark:text-gray-500 text-xs ml-1">median</span>
+                                <span className="text-gray-600 dark:text-gray-400 text-xs ml-1">median</span>
                             </div>
                             <div>
                                 <span className="font-semibold text-gray-900 dark:text-white">
@@ -143,7 +143,7 @@ export function SalaryCard({
                 <div className="grid grid-cols-2 gap-3">
                     {mean && (
                         <div className="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl">
-                            <p className="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wider">
+                            <p className="text-xs text-gray-600 dark:text-gray-400 font-medium uppercase tracking-wider">
                                 Mean Salary
                             </p>
                             <p className="text-lg font-bold text-gray-900 dark:text-white mt-1">
@@ -153,7 +153,7 @@ export function SalaryCard({
                     )}
                     {pct25 && (
                         <div className="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl">
-                            <p className="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wider">
+                            <p className="text-xs text-gray-600 dark:text-gray-400 font-medium uppercase tracking-wider">
                                 25th Percentile
                             </p>
                             <p className="text-lg font-bold text-gray-900 dark:text-white mt-1">
@@ -163,7 +163,7 @@ export function SalaryCard({
                     )}
                     {pct75 && (
                         <div className="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl">
-                            <p className="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wider">
+                            <p className="text-xs text-gray-600 dark:text-gray-400 font-medium uppercase tracking-wider">
                                 75th Percentile
                             </p>
                             <p className="text-lg font-bold text-gray-900 dark:text-white mt-1">
@@ -173,7 +173,7 @@ export function SalaryCard({
                     )}
                     {employment && (
                         <div className="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl">
-                            <p className="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wider">
+                            <p className="text-xs text-gray-600 dark:text-gray-400 font-medium uppercase tracking-wider">
                                 Total Employment
                             </p>
                             <p className="text-lg font-bold text-gray-900 dark:text-white mt-1">

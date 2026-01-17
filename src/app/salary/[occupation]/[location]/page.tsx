@@ -244,7 +244,6 @@ export default async function SalaryPage({ params }: PageProps) {
                                                     key={`${item.occ_slug}-${item.metro_slug}`}
                                                     href={`/salary/${item.occ_slug}/${item.metro_slug}`}
                                                     className="flex justify-between items-center p-2 rounded hover:bg-gray-50 dark:hover:bg-gray-700 underline decoration-transparent hover:decoration-current"
-                                                    aria-label={`${data.occ_title} salary in ${item.area_title}: ${formatSalary(item.a_median)}`}
                                                 >
                                                     <span className="text-sm text-gray-700 dark:text-gray-300 truncate">
                                                         {item.area_title}
@@ -276,7 +275,6 @@ export default async function SalaryPage({ params }: PageProps) {
                                                     key={`${item.occ_slug}-${item.metro_slug}`}
                                                     href={`/salary/${item.occ_slug}/${item.metro_slug}`}
                                                     className="flex justify-between items-center p-2 rounded hover:bg-gray-50 dark:hover:bg-gray-700 underline decoration-transparent hover:decoration-current"
-                                                    aria-label={`${item.occ_title} salary in ${data.area_title}: ${formatSalary(item.a_median)}`}
                                                 >
                                                     <span className="text-sm text-gray-700 dark:text-gray-300 truncate">
                                                         {item.occ_title}
