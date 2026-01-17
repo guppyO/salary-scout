@@ -51,40 +51,94 @@ function groupByState(metros: MetroWithStats[]): Map<string, MetroWithStats[]> {
     return groups;
 }
 
+// State name mapping
+const stateNames: Record<string, string> = {
+    'AL': 'Alabama', 'AK': 'Alaska', 'AZ': 'Arizona', 'AR': 'Arkansas',
+    'CA': 'California', 'CO': 'Colorado', 'CT': 'Connecticut', 'DE': 'Delaware',
+    'FL': 'Florida', 'GA': 'Georgia', 'HI': 'Hawaii', 'ID': 'Idaho',
+    'IL': 'Illinois', 'IN': 'Indiana', 'IA': 'Iowa', 'KS': 'Kansas',
+    'KY': 'Kentucky', 'LA': 'Louisiana', 'ME': 'Maine', 'MD': 'Maryland',
+    'MA': 'Massachusetts', 'MI': 'Michigan', 'MN': 'Minnesota', 'MS': 'Mississippi',
+    'MO': 'Missouri', 'MT': 'Montana', 'NE': 'Nebraska', 'NV': 'Nevada',
+    'NH': 'New Hampshire', 'NJ': 'New Jersey', 'NM': 'New Mexico', 'NY': 'New York',
+    'NC': 'North Carolina', 'ND': 'North Dakota', 'OH': 'Ohio', 'OK': 'Oklahoma',
+    'OR': 'Oregon', 'PA': 'Pennsylvania', 'RI': 'Rhode Island', 'SC': 'South Carolina',
+    'SD': 'South Dakota', 'TN': 'Tennessee', 'TX': 'Texas', 'UT': 'Utah',
+    'VT': 'Vermont', 'VA': 'Virginia', 'WA': 'Washington', 'WV': 'West Virginia',
+    'WI': 'Wisconsin', 'WY': 'Wyoming', 'DC': 'District of Columbia',
+    'PR': 'Puerto Rico', 'GU': 'Guam', 'VI': 'Virgin Islands',
+};
+
 export default async function LocationsPage() {
     const metros = await getMetros();
     const grouped = groupByState(metros);
     const states = Array.from(grouped.keys()).sort();
 
+    // Calculate summary stats
+    const totalMetros = metros.length;
+    const totalStates = states.length;
+    const topPayingMetro = [...metros].sort((a, b) => (b.top_salary || 0) - (a.top_salary || 0))[0];
+
     return (
-        <div className="min-h-screen flex flex-col">
+        <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-950">
             <Header />
 
             <main className="flex-1">
-                {/* Header */}
-                <section className="bg-gradient-to-b from-blue-600 to-blue-700 text-white py-12 px-4">
-                    <div className="container mx-auto max-w-6xl">
-                        <h1 className="text-3xl md:text-4xl font-bold mb-4">
+                {/* Hero Section */}
+                <section className="relative bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-700 text-white py-16 px-4 overflow-hidden">
+                    {/* Background decoration */}
+                    <div className="absolute inset-0 overflow-hidden">
+                        <div className="absolute -top-24 -right-24 w-96 h-96 bg-white/5 rounded-full blur-3xl" />
+                        <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-teal-400/20 rounded-full blur-3xl" />
+                    </div>
+
+                    <div className="container mx-auto max-w-6xl relative">
+                        {/* Breadcrumb */}
+                        <nav className="text-sm text-emerald-200 mb-6">
+                            <Link href="/" className="hover:text-white underline">Home</Link>
+                            <span className="mx-2">/</span>
+                            <span className="text-white">Locations</span>
+                        </nav>
+
+                        <h1 className="text-4xl md:text-5xl font-bold mb-4">
                             Browse Salaries by Location
                         </h1>
-                        <p className="text-xl text-blue-100 mb-6">
-                            Explore salary data across {metros.length.toLocaleString()} metro areas
+                        <p className="text-xl text-emerald-100 mb-8 max-w-2xl">
+                            Explore salary data across {totalMetros.toLocaleString()} metro areas in the United States
                         </p>
-                        <div className="max-w-xl">
-                            <SearchBar placeholder="Search locations..." />
+
+                        {/* Stats Cards */}
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+                            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+                                <div className="text-3xl font-bold">{totalMetros.toLocaleString()}</div>
+                                <div className="text-emerald-200 text-sm">Metro Areas</div>
+                            </div>
+                            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+                                <div className="text-3xl font-bold">{totalStates}</div>
+                                <div className="text-emerald-200 text-sm">States & Territories</div>
+                            </div>
+                            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+                                <div className="text-xl font-bold truncate">{topPayingMetro?.area_title}</div>
+                                <div className="text-emerald-200 text-sm">Highest Top Salary: ${topPayingMetro?.top_salary?.toLocaleString()}</div>
+                            </div>
+                        </div>
+
+                        {/* Search */}
+                        <div className="max-w-2xl">
+                            <SearchBar placeholder="Search for a city or metro area..." size="lg" />
                         </div>
                     </div>
                 </section>
 
                 {/* State Navigation */}
-                <section className="sticky top-16 z-40 bg-white dark:bg-gray-950 border-b py-3 px-4">
-                    <div className="container mx-auto max-w-6xl">
-                        <div className="flex flex-wrap gap-2">
+                <section className="sticky top-16 z-40 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 shadow-sm">
+                    <div className="container mx-auto max-w-6xl px-4 py-3">
+                        <div className="flex flex-wrap gap-1">
                             {states.map((state) => (
                                 <a
                                     key={state}
                                     href={`#${state}`}
-                                    className="px-3 py-1 text-sm font-medium rounded hover:bg-blue-100 dark:hover:bg-blue-900 text-gray-700 dark:text-gray-300"
+                                    className="px-3 py-1.5 text-sm font-semibold rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-emerald-500 hover:text-white text-gray-700 dark:text-gray-300 transition-colors"
                                 >
                                     {state}
                                 </a>
@@ -94,26 +148,55 @@ export default async function LocationsPage() {
                 </section>
 
                 {/* Metros List */}
-                <section className="py-8 px-4">
+                <section className="py-12 px-4">
                     <div className="container mx-auto max-w-6xl">
                         {states.map((state) => (
-                            <div key={state} id={state} className="mb-8 scroll-mt-32">
-                                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 pb-2 border-b">
-                                    {state}
-                                </h2>
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                            <div key={state} id={state} className="mb-12 scroll-mt-32">
+                                <div className="flex items-center gap-4 mb-6">
+                                    <div className="w-12 h-12 flex items-center justify-center bg-emerald-600 text-white text-lg font-bold rounded-xl shadow-lg shadow-emerald-600/20">
+                                        {state}
+                                    </div>
+                                    <div>
+                                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                                            {stateNames[state] || state}
+                                        </h2>
+                                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                                            {grouped.get(state)!.length} metro {grouped.get(state)!.length === 1 ? 'area' : 'areas'}
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
                                     {grouped.get(state)!.map((metro) => (
                                         <Link
                                             key={metro.id}
                                             href={`/locations/${metro.slug}`}
-                                            className="flex justify-between items-center p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 border border-transparent hover:border-gray-200 dark:hover:border-gray-700 transition-colors"
+                                            className="group flex items-center gap-3 p-4 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 hover:border-emerald-300 dark:hover:border-emerald-700 hover:shadow-lg hover:shadow-emerald-500/5 transition-all"
                                         >
-                                            <span className="text-gray-900 dark:text-white font-medium truncate mr-2">
-                                                {metro.area_title}
-                                            </span>
-                                            <span className="text-sm text-gray-500 dark:text-gray-400 shrink-0">
-                                                {metro.occ_count} jobs
-                                            </span>
+                                            <div className="flex-shrink-0 w-10 h-10 flex items-center justify-center bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-lg group-hover:bg-emerald-100 dark:group-hover:bg-emerald-900/50 transition-colors">
+                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                </svg>
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <div className="font-medium text-gray-900 dark:text-white truncate group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+                                                    {metro.area_title}
+                                                </div>
+                                                <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                                                    <span className="font-semibold text-blue-600 dark:text-blue-400">
+                                                        {metro.occ_count} jobs
+                                                    </span>
+                                                    {metro.top_salary && (
+                                                        <>
+                                                            <span className="text-gray-300 dark:text-gray-600">|</span>
+                                                            <span>Top: ${metro.top_salary.toLocaleString()}</span>
+                                                        </>
+                                                    )}
+                                                </div>
+                                            </div>
+                                            <svg className="w-5 h-5 text-gray-400 group-hover:text-emerald-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                            </svg>
                                         </Link>
                                     ))}
                                 </div>
