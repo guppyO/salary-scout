@@ -107,22 +107,6 @@ export default async function LocationsPage() {
                             Explore salary data across {totalMetros.toLocaleString()} metro areas in the United States
                         </p>
 
-                        {/* Stats Cards */}
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-                            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
-                                <div className="text-3xl font-bold">{totalMetros.toLocaleString()}</div>
-                                <div className="text-blue-200 text-sm">Metro Areas</div>
-                            </div>
-                            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
-                                <div className="text-3xl font-bold">{totalStates}</div>
-                                <div className="text-blue-200 text-sm">States & Territories</div>
-                            </div>
-                            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
-                                <div className="text-xl font-bold truncate">{topPayingMetro?.area_title}</div>
-                                <div className="text-blue-200 text-sm">Highest Top Salary: ${topPayingMetro?.top_salary?.toLocaleString()}</div>
-                            </div>
-                        </div>
-
                         {/* Search */}
                         <div className="max-w-2xl">
                             <SearchBar placeholder="Search for a city or metro area..." size="lg" />
@@ -182,16 +166,10 @@ export default async function LocationsPage() {
                                                 <div className="font-medium text-gray-900 dark:text-white truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                                                     {metro.area_title}
                                                 </div>
-                                                <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                                                <div className="text-sm text-gray-500 dark:text-gray-400">
                                                     <span className="font-semibold text-blue-600 dark:text-blue-400">
                                                         {metro.occ_count} jobs
                                                     </span>
-                                                    {metro.top_salary && (
-                                                        <>
-                                                            <span className="text-gray-300 dark:text-gray-600">|</span>
-                                                            <span>Top: ${metro.top_salary.toLocaleString()}</span>
-                                                        </>
-                                                    )}
                                                 </div>
                                             </div>
                                             <svg className="w-5 h-5 text-gray-400 group-hover:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">

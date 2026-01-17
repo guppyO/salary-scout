@@ -214,7 +214,7 @@ export function SearchBar({
             {isOpen && results.length > 0 && (
                 <div
                     ref={dropdownRef}
-                    className="absolute z-50 w-full mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl overflow-hidden"
+                    className="absolute z-[100] w-full mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl overflow-hidden"
                 >
                     {results.map((result, index) => (
                         <button
@@ -486,7 +486,7 @@ export function HeroSearch({ className = '' }: HeroSearchProps) {
                     {activeField === 'job' && jobResults.length > 0 && (
                         <div
                             ref={dropdownRef}
-                            className="absolute z-50 w-full mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl overflow-hidden"
+                            className="absolute z-[100] w-full mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl overflow-hidden"
                         >
                             {jobResults.map((result, index) => (
                                 <button
@@ -566,7 +566,7 @@ export function HeroSearch({ className = '' }: HeroSearchProps) {
                     {activeField === 'location' && locationResults.length > 0 && (
                         <div
                             ref={dropdownRef}
-                            className="absolute z-50 w-full mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl overflow-hidden"
+                            className="absolute z-[100] w-full mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl overflow-hidden"
                         >
                             {locationResults.map((result, index) => (
                                 <button

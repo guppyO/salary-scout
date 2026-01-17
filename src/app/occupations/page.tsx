@@ -90,22 +90,6 @@ export default async function OccupationsPage() {
                             Explore salary data for {totalOccupations.toLocaleString()} occupations across the United States
                         </p>
 
-                        {/* Stats Cards */}
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-                            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
-                                <div className="text-3xl font-bold">{totalOccupations.toLocaleString()}</div>
-                                <div className="text-blue-200 text-sm">Total Occupations</div>
-                            </div>
-                            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
-                                <div className="text-3xl font-bold">${avgSalary.toLocaleString()}</div>
-                                <div className="text-blue-200 text-sm">Average Salary</div>
-                            </div>
-                            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
-                                <div className="text-xl font-bold truncate">{topPaying?.occ_title}</div>
-                                <div className="text-blue-200 text-sm">Top Paying: ${topPaying?.avg_median?.toLocaleString()}</div>
-                            </div>
-                        </div>
-
                         {/* Search */}
                         <div className="max-w-2xl">
                             <SearchBar placeholder="Search for an occupation..." size="lg" />
