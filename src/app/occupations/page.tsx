@@ -56,9 +56,10 @@ export default async function OccupationsPage() {
 
     // Calculate summary stats
     const totalOccupations = occupations.length;
-    const avgSalary = Math.round(
-        occupations.reduce((sum, o) => sum + (o.avg_median || 0), 0) / occupations.filter(o => o.avg_median).length
-    );
+    const occupationsWithSalary = occupations.filter(o => o.avg_median);
+    const avgSalary = occupationsWithSalary.length > 0
+        ? Math.round(occupationsWithSalary.reduce((sum, o) => sum + (o.avg_median || 0), 0) / occupationsWithSalary.length)
+        : 0;
     const topPaying = [...occupations].sort((a, b) => (b.avg_median || 0) - (a.avg_median || 0))[0];
 
     return (

@@ -237,7 +237,7 @@ export function SearchBar({
                                 className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center ${
                                     result.type === 'occupation'
                                         ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400'
-                                        : 'bg-green-100 dark:bg-green-900/50 text-green-600 dark:text-green-400'
+                                        : 'bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400'
                                 }`}
                             >
                                 {result.type === 'occupation' ? (
@@ -472,8 +472,8 @@ export function HeroSearch({ className = '' }: HeroSearchProps) {
                             setSelectedIndex(-1);
                         }}
                         onKeyDown={(e) => handleKeyDown(e, 'job')}
-                        placeholder="Job title (e.g., Software Developer)"
-                        className="w-full h-14 pl-12 pr-4 text-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder:text-gray-500 rounded-xl border-0 focus:ring-2 focus:ring-blue-400 focus:outline-none shadow-sm"
+                        placeholder="Job title..."
+                        className="w-full h-14 pl-12 pr-4 text-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 rounded-xl border-0 dark:border dark:border-gray-700 focus:ring-2 focus:ring-blue-400 focus:outline-none shadow-sm"
                         autoComplete="off"
                     />
                     {isLoading && activeField === 'job' && (
@@ -552,8 +552,8 @@ export function HeroSearch({ className = '' }: HeroSearchProps) {
                             setSelectedIndex(-1);
                         }}
                         onKeyDown={(e) => handleKeyDown(e, 'location')}
-                        placeholder="Location (e.g., New York)"
-                        className="w-full h-14 pl-12 pr-4 text-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder:text-gray-500 rounded-xl border-0 focus:ring-2 focus:ring-blue-400 focus:outline-none shadow-sm"
+                        placeholder="Location..."
+                        className="w-full h-14 pl-12 pr-4 text-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 rounded-xl border-0 dark:border dark:border-gray-700 focus:ring-2 focus:ring-blue-400 focus:outline-none shadow-sm"
                         autoComplete="off"
                     />
                     {isLoading && activeField === 'location' && (
@@ -580,7 +580,7 @@ export function HeroSearch({ className = '' }: HeroSearchProps) {
                                     onClick={() => selectResult(result, 'location')}
                                     onMouseEnter={() => setSelectedIndex(index)}
                                 >
-                                    <div className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center bg-green-100 dark:bg-green-900/50 text-green-600 dark:text-green-400">
+                                    <div className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400">
                                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />

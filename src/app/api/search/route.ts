@@ -22,10 +22,12 @@ export async function GET(request: NextRequest) {
     const location = searchParams.get('location')?.trim() || '';
 
     if (!q && !location) {
-        return NextResponse.json({ results: [] });
+        return NextResponse.json({ occupations: [], locations: [], results: [] });
     }
 
     const results: SearchResult[] = [];
+    const occupations: Array<{ occ_title: string; slug: string; avg_salary?: number }> = [];
+    const locations: Array<{ area_title: string; slug: string; state_abbr?: string }> = [];
 
     try {
         // If both job and location provided, search for specific salary pages
@@ -65,22 +67,29 @@ export async function GET(request: NextRequest) {
         }
 
         // Search occupations if job query provided
-        if (q && results.length < 20) {
+        if (q) {
             const occupationResults = await query<{
                 occ_title: string;
                 slug: string;
+                avg_salary: number | null;
             }>(`
-                SELECT occ_title, slug
-                FROM occupations
-                WHERE is_indexable = TRUE
-                    AND (occ_title ILIKE $1 OR slug ILIKE $1)
+                SELECT o.occ_title, o.slug,
+                    (SELECT ROUND(AVG(sd.a_median)::numeric, 0) FROM salary_data sd WHERE sd.occupation_id = o.id AND sd.is_indexable = TRUE) as avg_salary
+                FROM occupations o
+                WHERE o.is_indexable = TRUE
+                    AND (o.occ_title ILIKE $1 OR o.slug ILIKE $1)
                 ORDER BY
-                    CASE WHEN occ_title ILIKE $2 THEN 0 ELSE 1 END,
-                    occ_title
-                LIMIT $3
-            `, [`%${q}%`, `${q}%`, 20 - results.length]);
+                    CASE WHEN o.occ_title ILIKE $2 THEN 0 ELSE 1 END,
+                    o.occ_title
+                LIMIT 10
+            `, [`%${q}%`, `${q}%`]);
 
             for (const row of occupationResults) {
+                occupations.push({
+                    occ_title: row.occ_title,
+                    slug: row.slug,
+                    avg_salary: row.avg_salary || undefined,
+                });
                 results.push({
                     type: 'occupation',
                     title: row.occ_title,
@@ -90,9 +99,9 @@ export async function GET(request: NextRequest) {
             }
         }
 
-        // Search locations if location query provided (or if only q provided and few results)
-        if ((location || (q && results.length < 10)) && results.length < 20) {
-            const searchTerm = location || q;
+        // Search locations if location query provided (or if only q provided)
+        const searchTerm = location || q;
+        if (searchTerm) {
             const locationResults = await query<{
                 area_title: string;
                 slug: string;
@@ -105,10 +114,15 @@ export async function GET(request: NextRequest) {
                 ORDER BY
                     CASE WHEN area_title ILIKE $2 THEN 0 ELSE 1 END,
                     area_title
-                LIMIT $3
-            `, [`%${searchTerm}%`, `${searchTerm}%`, 20 - results.length]);
+                LIMIT 10
+            `, [`%${searchTerm}%`, `${searchTerm}%`]);
 
             for (const row of locationResults) {
+                locations.push({
+                    area_title: row.area_title,
+                    slug: row.slug,
+                    state_abbr: row.state_abbr || undefined,
+                });
                 results.push({
                     type: 'location',
                     title: row.area_title,
@@ -118,11 +132,11 @@ export async function GET(request: NextRequest) {
             }
         }
 
-        return NextResponse.json({ results });
+        return NextResponse.json({ occupations, locations, results });
     } catch (error) {
         console.error('Search error:', error);
         return NextResponse.json(
-            { error: 'Search failed', results: [] },
+            { error: 'Search failed', occupations: [], locations: [], results: [] },
             { status: 500 }
         );
     }

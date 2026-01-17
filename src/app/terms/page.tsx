@@ -3,6 +3,7 @@
  */
 
 import { Metadata } from 'next';
+import { Header, Footer } from '@/components';
 
 export const metadata: Metadata = {
     title: 'Terms of Use | SalaryScout',
@@ -11,14 +12,17 @@ export const metadata: Metadata = {
 
 export default function TermsPage() {
     return (
-        <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-950 dark:to-gray-900">
-            {/* Header */}
-            <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 text-white py-16">
-                <div className="container mx-auto px-4">
-                    <h1 className="text-4xl font-bold tracking-tight">Terms of Use</h1>
-                    <p className="text-blue-100 mt-2">Last updated: January 2026</p>
+        <div className="min-h-screen flex flex-col bg-gradient-to-b from-gray-50 to-white dark:from-gray-950 dark:to-gray-900">
+            <Header />
+
+            <main className="flex-1">
+                {/* Hero */}
+                <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 dark:from-blue-900 dark:via-blue-950 dark:to-indigo-950 text-white py-16">
+                    <div className="container mx-auto px-4">
+                        <h1 className="text-4xl font-bold tracking-tight">Terms of Use</h1>
+                        <p className="text-blue-100 mt-2">Last updated: January 2026</p>
+                    </div>
                 </div>
-            </div>
 
             {/* Content */}
             <div className="container mx-auto px-4 py-12 max-w-4xl">
@@ -112,7 +116,9 @@ export default function TermsPage() {
                         </p>
                     </div>
                 </div>
-            </div>
+            </main>
+
+            <Footer />
         </div>
     );
 }

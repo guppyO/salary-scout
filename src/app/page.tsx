@@ -292,7 +292,7 @@ export default async function HomePage() {
                     {/* CTA Section */}
                     <section className="py-24 px-4">
                         <div className="container mx-auto max-w-4xl">
-                            <div className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 rounded-3xl p-10 md:p-16 text-center text-white">
+                            <div className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 dark:from-blue-900 dark:via-blue-950 dark:to-indigo-950 rounded-3xl p-10 md:p-16 text-center text-white">
                                 {/* Background decoration */}
                                 <div className="absolute inset-0 overflow-hidden pointer-events-none">
                                     <div className="absolute -top-20 -right-20 w-60 h-60 bg-white/10 rounded-full blur-3xl" />

@@ -59,7 +59,7 @@ function SearchContent() {
 
             <main className="flex-1">
                 {/* Search Header */}
-                <section className="bg-gradient-to-b from-blue-600 to-blue-700 text-white py-12 px-4">
+                <section className="bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 dark:from-blue-900 dark:via-blue-950 dark:to-indigo-950 text-white py-12 px-4">
                     <div className="container mx-auto max-w-4xl">
                         <h1 className="text-3xl font-bold mb-6">Search Salaries</h1>
 
@@ -69,8 +69,8 @@ function SearchContent() {
                                     type="text"
                                     value={query}
                                     onChange={(e) => setQuery(e.target.value)}
-                                    placeholder="Job title (e.g., Software Developer)"
-                                    className="h-12 bg-white text-gray-900"
+                                    placeholder="Job title..."
+                                    className="h-12 bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-0 dark:border dark:border-gray-700 placeholder:text-gray-500 dark:placeholder:text-gray-400"
                                 />
                             </div>
                             <div className="flex-1">
@@ -78,8 +78,8 @@ function SearchContent() {
                                     type="text"
                                     value={location}
                                     onChange={(e) => setLocation(e.target.value)}
-                                    placeholder="Location (e.g., New York)"
-                                    className="h-12 bg-white text-gray-900"
+                                    placeholder="Location..."
+                                    className="h-12 bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-0 dark:border dark:border-gray-700 placeholder:text-gray-500 dark:placeholder:text-gray-400"
                                 />
                             </div>
                         </div>
