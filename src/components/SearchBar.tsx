@@ -7,6 +7,7 @@
 'use client';
 
 import { useState, useCallback, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 
@@ -42,6 +43,66 @@ function useDebounce<T>(value: T, delay: number): T {
     return debouncedValue;
 }
 
+// Portal dropdown component
+function DropdownPortal({
+    children,
+    isOpen,
+    inputRef,
+}: {
+    children: React.ReactNode;
+    isOpen: boolean;
+    inputRef: React.RefObject<HTMLInputElement | null>;
+}) {
+    const [position, setPosition] = useState({ top: 0, left: 0, width: 0 });
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    useEffect(() => {
+        if (!isOpen || !inputRef.current) return;
+
+        const updatePosition = () => {
+            if (inputRef.current) {
+                const rect = inputRef.current.getBoundingClientRect();
+                setPosition({
+                    top: rect.bottom + 8,
+                    left: rect.left,
+                    width: rect.width,
+                });
+            }
+        };
+
+        updatePosition();
+
+        // Update position on scroll/resize
+        window.addEventListener('scroll', updatePosition, true);
+        window.addEventListener('resize', updatePosition);
+
+        return () => {
+            window.removeEventListener('scroll', updatePosition, true);
+            window.removeEventListener('resize', updatePosition);
+        };
+    }, [isOpen, inputRef]);
+
+    if (!mounted || !isOpen) return null;
+
+    return createPortal(
+        <div
+            className="fixed z-[9999]"
+            style={{
+                top: position.top,
+                left: position.left,
+                width: position.width,
+            }}
+        >
+            {children}
+        </div>,
+        document.body
+    );
+}
+
 export function SearchBar({
     placeholder = 'Search jobs or locations...',
     className = '',
@@ -53,25 +114,11 @@ export function SearchBar({
     const [isOpen, setIsOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [selectedIndex, setSelectedIndex] = useState(-1);
-    const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0, width: 0 });
     const router = useRouter();
     const inputRef = useRef<HTMLInputElement>(null);
     const dropdownRef = useRef<HTMLDivElement>(null);
-    const formRef = useRef<HTMLFormElement>(null);
 
     const debouncedQuery = useDebounce(query, 200);
-
-    // Update dropdown position when input is focused or results change
-    useEffect(() => {
-        if (isOpen && inputRef.current) {
-            const rect = inputRef.current.getBoundingClientRect();
-            setDropdownPosition({
-                top: rect.bottom + window.scrollY + 8,
-                left: rect.left + window.scrollX,
-                width: rect.width,
-            });
-        }
-    }, [isOpen, results]);
 
     // Fetch results when query changes
     useEffect(() => {
@@ -89,9 +136,9 @@ export function SearchBar({
                     const data = await response.json();
                     const formattedResults: SearchResult[] = [];
 
-                    // Add occupations (unless filtering for locations only)
+                    // Add occupations (unless filtering for locations only) - limit to 5
                     if (filterType !== 'locations') {
-                        data.occupations?.slice(0, filterType === 'occupations' ? 8 : 5).forEach((occ: { occ_title: string; slug: string; avg_salary?: number }) => {
+                        data.occupations?.slice(0, 5).forEach((occ: { occ_title: string; slug: string; avg_salary?: number }) => {
                             formattedResults.push({
                                 type: 'occupation',
                                 title: occ.occ_title,
@@ -101,9 +148,9 @@ export function SearchBar({
                         });
                     }
 
-                    // Add locations (unless filtering for occupations only)
+                    // Add locations (unless filtering for occupations only) - limit to 5
                     if (filterType !== 'occupations') {
-                        data.locations?.slice(0, filterType === 'locations' ? 8 : 5).forEach((loc: { area_title: string; slug: string; state_abbr?: string }) => {
+                        data.locations?.slice(0, 5).forEach((loc: { area_title: string; slug: string; state_abbr?: string }) => {
                             formattedResults.push({
                                 type: 'location',
                                 title: loc.area_title,
@@ -193,7 +240,7 @@ export function SearchBar({
 
     return (
         <>
-            <form onSubmit={handleSubmit} className={`relative ${className}`} ref={formRef}>
+            <form onSubmit={handleSubmit} className={`relative ${className}`}>
                 <div className="flex gap-2">
                     <div className="relative flex-1">
                         <svg
@@ -232,16 +279,10 @@ export function SearchBar({
                 </div>
             </form>
 
-            {/* Autocomplete Dropdown - Fixed Position Portal */}
-            {isOpen && results.length > 0 && (
+            <DropdownPortal isOpen={isOpen && results.length > 0} inputRef={inputRef}>
                 <div
                     ref={dropdownRef}
-                    className="fixed z-[9999] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl overflow-hidden"
-                    style={{
-                        top: dropdownPosition.top,
-                        left: dropdownPosition.left,
-                        width: dropdownPosition.width,
-                    }}
+                    className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl overflow-hidden max-h-80 overflow-y-auto"
                 >
                     {results.map((result, index) => (
                         <button
@@ -259,7 +300,6 @@ export function SearchBar({
                             }}
                             onMouseEnter={() => setSelectedIndex(index)}
                         >
-                            {/* Icon based on type */}
                             <div
                                 className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center ${
                                     result.type === 'occupation'
@@ -294,7 +334,7 @@ export function SearchBar({
                         </button>
                     ))}
                 </div>
-            )}
+            </DropdownPortal>
         </>
     );
 }
@@ -311,7 +351,6 @@ export function HeroSearch({ className = '' }: HeroSearchProps) {
     const [activeField, setActiveField] = useState<'job' | 'location' | null>(null);
     const [selectedIndex, setSelectedIndex] = useState(-1);
     const [isLoading, setIsLoading] = useState(false);
-    const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0, width: 0 });
     const router = useRouter();
     const jobInputRef = useRef<HTMLInputElement>(null);
     const locationInputRef = useRef<HTMLInputElement>(null);
@@ -321,26 +360,7 @@ export function HeroSearch({ className = '' }: HeroSearchProps) {
     const debouncedJobQuery = useDebounce(jobQuery, 200);
     const debouncedLocationQuery = useDebounce(locationQuery, 200);
 
-    // Update dropdown position when active field changes
-    useEffect(() => {
-        if (activeField === 'job' && jobInputRef.current) {
-            const rect = jobInputRef.current.getBoundingClientRect();
-            setDropdownPosition({
-                top: rect.bottom + 8,
-                left: rect.left,
-                width: rect.width,
-            });
-        } else if (activeField === 'location' && locationInputRef.current) {
-            const rect = locationInputRef.current.getBoundingClientRect();
-            setDropdownPosition({
-                top: rect.bottom + 8,
-                left: rect.left,
-                width: rect.width,
-            });
-        }
-    }, [activeField, jobResults, locationResults]);
-
-    // Fetch job results
+    // Fetch job results - limit to 5
     useEffect(() => {
         async function fetchJobResults() {
             if (debouncedJobQuery.length < 2) {
@@ -354,7 +374,7 @@ export function HeroSearch({ className = '' }: HeroSearchProps) {
                 if (response.ok) {
                     const data = await response.json();
                     const results: SearchResult[] = [];
-                    data.occupations?.slice(0, 6).forEach((occ: { occ_title: string; slug: string; avg_salary?: number }) => {
+                    data.occupations?.slice(0, 5).forEach((occ: { occ_title: string; slug: string; avg_salary?: number }) => {
                         results.push({
                             type: 'occupation',
                             title: occ.occ_title,
@@ -375,7 +395,7 @@ export function HeroSearch({ className = '' }: HeroSearchProps) {
         fetchJobResults();
     }, [debouncedJobQuery]);
 
-    // Fetch location results
+    // Fetch location results - limit to 5
     useEffect(() => {
         async function fetchLocationResults() {
             if (debouncedLocationQuery.length < 2) {
@@ -389,7 +409,7 @@ export function HeroSearch({ className = '' }: HeroSearchProps) {
                 if (response.ok) {
                     const data = await response.json();
                     const results: SearchResult[] = [];
-                    data.locations?.slice(0, 6).forEach((loc: { area_title: string; slug: string; state_abbr?: string }) => {
+                    data.locations?.slice(0, 5).forEach((loc: { area_title: string; slug: string; state_abbr?: string }) => {
                         results.push({
                             type: 'location',
                             title: loc.area_title,
@@ -488,185 +508,175 @@ export function HeroSearch({ className = '' }: HeroSearchProps) {
 
     return (
         <>
-        <form
-            onSubmit={handleSubmit}
-            className={`bg-white/10 backdrop-blur-xl rounded-2xl p-2 border border-white/20 shadow-2xl ${className}`}
-        >
-            <div className="flex flex-col sm:flex-row gap-2">
-                {/* Job Input */}
-                <div className="relative flex-1">
-                    <svg
-                        className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                    >
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+            <form
+                onSubmit={handleSubmit}
+                className={`bg-white/10 backdrop-blur-xl rounded-2xl p-2 border border-white/20 shadow-2xl ${className}`}
+            >
+                <div className="flex flex-col sm:flex-row gap-2">
+                    {/* Job Input */}
+                    <div className="relative flex-1">
+                        <svg
+                            className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                            />
+                        </svg>
+                        <input
+                            ref={jobInputRef}
+                            type="text"
+                            value={jobQuery}
+                            onChange={(e) => setJobQuery(e.target.value)}
+                            onFocus={() => {
+                                setActiveField('job');
+                                setSelectedIndex(-1);
+                            }}
+                            onKeyDown={(e) => handleKeyDown(e, 'job')}
+                            placeholder="Job title..."
+                            className="w-full h-14 pl-12 pr-4 text-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 rounded-xl border-0 dark:border dark:border-gray-700 focus:ring-2 focus:ring-blue-400 focus:outline-none shadow-sm"
+                            autoComplete="off"
                         />
-                    </svg>
-                    <input
-                        ref={jobInputRef}
-                        type="text"
-                        value={jobQuery}
-                        onChange={(e) => setJobQuery(e.target.value)}
-                        onFocus={() => {
-                            setActiveField('job');
-                            setSelectedIndex(-1);
-                        }}
-                        onKeyDown={(e) => handleKeyDown(e, 'job')}
-                        placeholder="Job title..."
-                        className="w-full h-14 pl-12 pr-4 text-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 rounded-xl border-0 dark:border dark:border-gray-700 focus:ring-2 focus:ring-blue-400 focus:outline-none shadow-sm"
-                        autoComplete="off"
-                    />
-                    {isLoading && activeField === 'job' && (
-                        <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                            <div className="h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-                        </div>
-                    )}
-                </div>
+                        {isLoading && activeField === 'job' && (
+                            <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                                <div className="h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                            </div>
+                        )}
+                    </div>
 
-                {/* Location Input */}
-                <div className="relative flex-1">
-                    <svg
-                        className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                    >
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                    {/* Location Input */}
+                    <div className="relative flex-1">
+                        <svg
+                            className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                            />
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                            />
+                        </svg>
+                        <input
+                            ref={locationInputRef}
+                            type="text"
+                            value={locationQuery}
+                            onChange={(e) => setLocationQuery(e.target.value)}
+                            onFocus={() => {
+                                setActiveField('location');
+                                setSelectedIndex(-1);
+                            }}
+                            onKeyDown={(e) => handleKeyDown(e, 'location')}
+                            placeholder="Location..."
+                            className="w-full h-14 pl-12 pr-4 text-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 rounded-xl border-0 dark:border dark:border-gray-700 focus:ring-2 focus:ring-blue-400 focus:outline-none shadow-sm"
+                            autoComplete="off"
                         />
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                        />
-                    </svg>
-                    <input
-                        ref={locationInputRef}
-                        type="text"
-                        value={locationQuery}
-                        onChange={(e) => setLocationQuery(e.target.value)}
-                        onFocus={() => {
-                            setActiveField('location');
-                            setSelectedIndex(-1);
-                        }}
-                        onKeyDown={(e) => handleKeyDown(e, 'location')}
-                        placeholder="Location..."
-                        className="w-full h-14 pl-12 pr-4 text-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 rounded-xl border-0 dark:border dark:border-gray-700 focus:ring-2 focus:ring-blue-400 focus:outline-none shadow-sm"
-                        autoComplete="off"
-                    />
-                    {isLoading && activeField === 'location' && (
-                        <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                            <div className="h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-                        </div>
-                    )}
-                </div>
+                        {isLoading && activeField === 'location' && (
+                            <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                                <div className="h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                            </div>
+                        )}
+                    </div>
 
-                <Button
-                    type="submit"
-                    size="lg"
-                    className="h-14 px-8 text-lg bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 transition-all"
+                    <Button
+                        type="submit"
+                        size="lg"
+                        className="h-14 px-8 text-lg bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 transition-all"
+                    >
+                        Find Salaries
+                    </Button>
+                </div>
+            </form>
+
+            {/* Job Autocomplete Dropdown - Portal */}
+            <DropdownPortal isOpen={activeField === 'job' && jobResults.length > 0} inputRef={jobInputRef}>
+                <div
+                    ref={jobDropdownRef}
+                    className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl overflow-hidden max-h-72 overflow-y-auto"
                 >
-                    Find Salaries
-                </Button>
-            </div>
-        </form>
-
-        {/* Job Autocomplete Dropdown - Fixed Position Portal */}
-        {activeField === 'job' && jobResults.length > 0 && (
-            <div
-                ref={jobDropdownRef}
-                className="fixed z-[9999] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl overflow-hidden"
-                style={{
-                    top: dropdownPosition.top,
-                    left: dropdownPosition.left,
-                    width: dropdownPosition.width,
-                }}
-            >
-                {jobResults.map((result, index) => (
-                    <button
-                        key={result.url}
-                        type="button"
-                        className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-colors ${
-                            index === selectedIndex
-                                ? 'bg-blue-100 dark:bg-blue-800/50'
-                                : 'hover:bg-gray-100 dark:hover:bg-gray-700'
-                        }`}
-                        onClick={() => selectResult(result, 'job')}
-                        onMouseEnter={() => setSelectedIndex(index)}
-                    >
-                        <div className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400">
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                            </svg>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                            <div className="font-medium text-gray-900 dark:text-white truncate">
-                                {result.title}
+                    {jobResults.map((result, index) => (
+                        <button
+                            key={result.url}
+                            type="button"
+                            className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-colors ${
+                                index === selectedIndex
+                                    ? 'bg-blue-100 dark:bg-blue-800/50'
+                                    : 'hover:bg-gray-100 dark:hover:bg-gray-700'
+                            }`}
+                            onClick={() => selectResult(result, 'job')}
+                            onMouseEnter={() => setSelectedIndex(index)}
+                        >
+                            <div className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400">
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                </svg>
                             </div>
-                            {result.subtitle && (
-                                <div className="text-sm text-gray-500 dark:text-gray-400">
-                                    {result.subtitle}
+                            <div className="flex-1 min-w-0">
+                                <div className="font-medium text-gray-900 dark:text-white truncate">
+                                    {result.title}
                                 </div>
-                            )}
-                        </div>
-                    </button>
-                ))}
-            </div>
-        )}
-
-        {/* Location Autocomplete Dropdown - Fixed Position Portal */}
-        {activeField === 'location' && locationResults.length > 0 && (
-            <div
-                ref={locationDropdownRef}
-                className="fixed z-[9999] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl overflow-hidden"
-                style={{
-                    top: dropdownPosition.top,
-                    left: dropdownPosition.left,
-                    width: dropdownPosition.width,
-                }}
-            >
-                {locationResults.map((result, index) => (
-                    <button
-                        key={result.url}
-                        type="button"
-                        className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-colors ${
-                            index === selectedIndex
-                                ? 'bg-blue-100 dark:bg-blue-800/50'
-                                : 'hover:bg-gray-100 dark:hover:bg-gray-700'
-                        }`}
-                        onClick={() => selectResult(result, 'location')}
-                        onMouseEnter={() => setSelectedIndex(index)}
-                    >
-                        <div className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400">
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                            </svg>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                            <div className="font-medium text-gray-900 dark:text-white truncate">
-                                {result.title}
+                                {result.subtitle && (
+                                    <div className="text-sm text-gray-500 dark:text-gray-400">
+                                        {result.subtitle}
+                                    </div>
+                                )}
                             </div>
-                            {result.subtitle && (
-                                <div className="text-sm text-gray-500 dark:text-gray-400">
-                                    {result.subtitle}
+                        </button>
+                    ))}
+                </div>
+            </DropdownPortal>
+
+            {/* Location Autocomplete Dropdown - Portal */}
+            <DropdownPortal isOpen={activeField === 'location' && locationResults.length > 0} inputRef={locationInputRef}>
+                <div
+                    ref={locationDropdownRef}
+                    className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl overflow-hidden max-h-72 overflow-y-auto"
+                >
+                    {locationResults.map((result, index) => (
+                        <button
+                            key={result.url}
+                            type="button"
+                            className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-colors ${
+                                index === selectedIndex
+                                    ? 'bg-blue-100 dark:bg-blue-800/50'
+                                    : 'hover:bg-gray-100 dark:hover:bg-gray-700'
+                            }`}
+                            onClick={() => selectResult(result, 'location')}
+                            onMouseEnter={() => setSelectedIndex(index)}
+                        >
+                            <div className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400">
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                            </div>
+                            <div className="flex-1 min-w-0">
+                                <div className="font-medium text-gray-900 dark:text-white truncate">
+                                    {result.title}
                                 </div>
-                            )}
-                        </div>
-                    </button>
-                ))}
-            </div>
-        )}
-    </>
+                                {result.subtitle && (
+                                    <div className="text-sm text-gray-500 dark:text-gray-400">
+                                        {result.subtitle}
+                                    </div>
+                                )}
+                            </div>
+                        </button>
+                    ))}
+                </div>
+            </DropdownPortal>
+        </>
     );
 }
