@@ -118,12 +118,12 @@ export default async function LocationPage({ params }: PageProps) {
                 <section className="bg-gradient-to-b from-blue-600 to-blue-700 text-white py-12 px-4">
                     <div className="container mx-auto max-w-6xl">
                         {/* Breadcrumbs */}
-                        <nav className="text-sm text-blue-100 mb-4">
-                            <Link href="/" className="hover:text-white">Home</Link>
+                        <nav className="text-sm text-blue-100 mb-4" aria-label="Breadcrumb">
+                            <Link href="/" className="underline hover:text-white">Home</Link>
                             <span className="mx-2">/</span>
-                            <Link href="/locations" className="hover:text-white">Locations</Link>
+                            <Link href="/locations" className="underline hover:text-white">Locations</Link>
                             <span className="mx-2">/</span>
-                            <span className="text-white">{metro.area_title}</span>
+                            <span className="text-white" aria-current="page">{metro.area_title}</span>
                         </nav>
 
                         <h1 className="text-3xl md:text-4xl font-bold mb-2">
@@ -192,7 +192,7 @@ export default async function LocationPage({ params }: PageProps) {
                                             <td className="p-4">
                                                 <Link
                                                     href={`/salary/${salary.occ_slug}/${metro.slug}`}
-                                                    className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+                                                    className="text-blue-600 dark:text-blue-400 underline font-medium"
                                                 >
                                                     {salary.occ_title}
                                                 </Link>

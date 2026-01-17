@@ -168,16 +168,16 @@ export default async function SalaryPage({ params }: PageProps) {
                 <section className="bg-gradient-to-b from-blue-600 to-blue-700 text-white py-8 px-4">
                     <div className="container mx-auto max-w-6xl">
                         {/* Breadcrumbs */}
-                        <nav className="text-sm text-blue-100 mb-4">
-                            <Link href="/" className="hover:text-white">Home</Link>
+                        <nav className="text-sm text-blue-100 mb-4" aria-label="Breadcrumb">
+                            <Link href="/" className="underline hover:text-white">Home</Link>
                             <span className="mx-2">/</span>
-                            <Link href="/occupations" className="hover:text-white">Occupations</Link>
+                            <Link href="/occupations" className="underline hover:text-white">Occupations</Link>
                             <span className="mx-2">/</span>
-                            <Link href={`/occupations/${data.occ_slug}`} className="hover:text-white">
+                            <Link href={`/occupations/${data.occ_slug}`} className="underline hover:text-white">
                                 {data.occ_title}
                             </Link>
                             <span className="mx-2">/</span>
-                            <span className="text-white">{data.area_title}</span>
+                            <span className="text-white" aria-current="page">{data.area_title}</span>
                         </nav>
 
                         <h1 className="text-3xl md:text-4xl font-bold">
@@ -243,7 +243,8 @@ export default async function SalaryPage({ params }: PageProps) {
                                                 <Link
                                                     key={`${item.occ_slug}-${item.metro_slug}`}
                                                     href={`/salary/${item.occ_slug}/${item.metro_slug}`}
-                                                    className="flex justify-between items-center p-2 rounded hover:bg-gray-50 dark:hover:bg-gray-700"
+                                                    className="flex justify-between items-center p-2 rounded hover:bg-gray-50 dark:hover:bg-gray-700 underline decoration-transparent hover:decoration-current"
+                                                    aria-label={`${data.occ_title} salary in ${item.area_title}: ${formatSalary(item.a_median)}`}
                                                 >
                                                     <span className="text-sm text-gray-700 dark:text-gray-300 truncate">
                                                         {item.area_title}
@@ -256,9 +257,9 @@ export default async function SalaryPage({ params }: PageProps) {
                                         </div>
                                         <Link
                                             href={`/occupations/${data.occ_slug}`}
-                                            className="block mt-4 text-sm text-blue-600 dark:text-blue-400 hover:underline"
+                                            className="block mt-4 text-sm text-blue-600 dark:text-blue-400 underline"
                                         >
-                                            View all locations &rarr;
+                                            View all {data.occ_title} locations &rarr;
                                         </Link>
                                     </div>
                                 )}
@@ -274,7 +275,8 @@ export default async function SalaryPage({ params }: PageProps) {
                                                 <Link
                                                     key={`${item.occ_slug}-${item.metro_slug}`}
                                                     href={`/salary/${item.occ_slug}/${item.metro_slug}`}
-                                                    className="flex justify-between items-center p-2 rounded hover:bg-gray-50 dark:hover:bg-gray-700"
+                                                    className="flex justify-between items-center p-2 rounded hover:bg-gray-50 dark:hover:bg-gray-700 underline decoration-transparent hover:decoration-current"
+                                                    aria-label={`${item.occ_title} salary in ${data.area_title}: ${formatSalary(item.a_median)}`}
                                                 >
                                                     <span className="text-sm text-gray-700 dark:text-gray-300 truncate">
                                                         {item.occ_title}
@@ -287,9 +289,9 @@ export default async function SalaryPage({ params }: PageProps) {
                                         </div>
                                         <Link
                                             href={`/locations/${data.metro_slug}`}
-                                            className="block mt-4 text-sm text-blue-600 dark:text-blue-400 hover:underline"
+                                            className="block mt-4 text-sm text-blue-600 dark:text-blue-400 underline"
                                         >
-                                            View all occupations &rarr;
+                                            View all {data.area_title} occupations &rarr;
                                         </Link>
                                     </div>
                                 )}
@@ -308,9 +310,9 @@ export default async function SalaryPage({ params }: PageProps) {
                                 href="https://www.bls.gov/oes/"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-blue-600 dark:text-blue-400 hover:underline ml-1"
+                                className="text-blue-600 dark:text-blue-400 underline ml-1"
                             >
-                                Learn more
+                                Visit BLS OEWS program
                             </a>
                         </p>
                     </div>

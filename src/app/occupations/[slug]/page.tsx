@@ -115,12 +115,12 @@ export default async function OccupationPage({ params }: PageProps) {
                 <section className="bg-gradient-to-b from-blue-600 to-blue-700 text-white py-12 px-4">
                     <div className="container mx-auto max-w-6xl">
                         {/* Breadcrumbs */}
-                        <nav className="text-sm text-blue-100 mb-4">
-                            <Link href="/" className="hover:text-white">Home</Link>
+                        <nav className="text-sm text-blue-100 mb-4" aria-label="Breadcrumb">
+                            <Link href="/" className="underline hover:text-white">Home</Link>
                             <span className="mx-2">/</span>
-                            <Link href="/occupations" className="hover:text-white">Occupations</Link>
+                            <Link href="/occupations" className="underline hover:text-white">Occupations</Link>
                             <span className="mx-2">/</span>
-                            <span className="text-white">{occupation.occ_title}</span>
+                            <span className="text-white" aria-current="page">{occupation.occ_title}</span>
                         </nav>
 
                         <h1 className="text-3xl md:text-4xl font-bold mb-4">
@@ -186,7 +186,7 @@ export default async function OccupationPage({ params }: PageProps) {
                                             <td className="p-4">
                                                 <Link
                                                     href={`/salary/${occupation.slug}/${salary.metro_slug}`}
-                                                    className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+                                                    className="text-blue-600 dark:text-blue-400 underline font-medium"
                                                 >
                                                     {salary.area_title}
                                                 </Link>
