@@ -90,7 +90,10 @@ export function ThemeToggle() {
 
     if (!mounted) {
         return (
-            <button className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800">
+            <button
+                className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800"
+                aria-label="Toggle theme"
+            >
                 <div className="w-5 h-5" />
             </button>
         );

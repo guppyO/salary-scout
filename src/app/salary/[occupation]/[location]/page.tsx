@@ -18,7 +18,7 @@ import {
     formatSalary,
 } from '@/lib/seo';
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://revenue-explorer-new.vercel.app';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://salaryscout.dev';
 
 interface PageProps {
     params: Promise<{ occupation: string; location: string }>;

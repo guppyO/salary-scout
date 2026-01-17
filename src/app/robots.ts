@@ -6,7 +6,7 @@
 
 import { MetadataRoute } from 'next';
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://revenue-explorer-new.vercel.app';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://salaryscout.dev';
 
 export default function robots(): MetadataRoute.Robots {
     return {
@@ -34,6 +34,6 @@ export default function robots(): MetadataRoute.Robots {
                 disallow: ['/'],
             },
         ],
-        sitemap: 'https://revenue-explorer-new.vercel.app/sitemap.xml',
+        sitemap: `${SITE_URL}/sitemap.xml`,
     };
 }
